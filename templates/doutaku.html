@@ -3,24 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銅鐸AR</title>
+    <title>銅鐸AR - 地面認識モード</title>
+    <!-- 3D表示のためのライブラリを読み込み -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; background-color: #f0f0f0; }
+        body { margin: 0; background-color: #f0f0f0; font-family: sans-serif; }
+        /* 画面いっぱいに表示する設定 */
         model-viewer { width: 100vw; height: 100vh; }
+        
+        /* カスタムARボタンの見た目 */
+        #ar-button {
+            background-color: #007bff;
+            color: white;
+            border-radius: 30px;
+            border: none;
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 
+        ar: AR機能をON
+        ar-modes: webxr（Androidの地面認識）と quick-look（iPhoneの地面認識）を優先
+        ar-placement: floor (地面に置く設定。これがマーカー不要のポイント)
+        camera-controls: 指で操作可能
+    -->
     <model-viewer 
         src="{{ url_for('static', filename='doutaku2.usdz') }}" 
         ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
         ar 
-        ar-modes="webxr scene-viewer quick-look" 
+        ar-modes="webxr quick-look scene-viewer" 
+        ar-placement="floor"
         camera-controls 
+        touch-action="pan-y"
+        shadow-intensity="2"
+        exposure="1"
+        environment-image="neutral"
         auto-rotate>
-        <button slot="ar-button" style="background-color: white; border-radius: 4px; border: none; position: absolute; bottom: 16px; right: 16px; padding: 12px;">
-            👋 カメラで見る
+        
+        <!-- AR開始ボタン -->
+        <button slot="ar-button" id="ar-button">
+            ✨ 銅鐸を地面に置く
         </button>
+
+        <!-- 読み込み中の表示 -->
+        <div slot="poster" style="display:flex; justify-content:center; align-items:center; height:100%;">
+            <p>3Dデータを読み込み中...</p>
+        </div>
+        
     </model-viewer>
+
 </body>
 </html>
