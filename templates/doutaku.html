@@ -3,64 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銅鐸AR - 地面認識モード</title>
-    <!-- 3D表示のためのライブラリを読み込み -->
+    <title>銅鐸AR - 展示</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; background-color: #f0f0f0; font-family: sans-serif; }
-        /* 画面いっぱいに表示する設定 */
-        model-viewer { width: 100vw; height: 100vh; }
+        /* レイアウトの設定 */
+        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5; color: #333; }
         
-        /* カスタムARボタンの見た目 */
+        header { padding: 20px; text-align: center; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 1.5rem; color: #4a4a4a; }
+        
+        /* 3Dモデル表示エリア */
+        .container { position: relative; width: 100%; height: 70vh; background: #eee; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+
+        /* ARボタン（地面認識・全方向回転対応） */
         #ar-button {
-            background-color: #007bff;
+            background-color: #4a90e2;
             color: white;
-            border-radius: 30px;
+            border-radius: 50px;
             border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
             position: absolute;
-            bottom: 32px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+
+        /* 下部の説明文エリア */
+        .description { padding: 20px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-    <!-- 
-        ar: AR機能をON
-        ar-modes: webxr（Androidの地面認識）と quick-look（iPhoneの地面認識）を優先
-        ar-placement: floor (地面に置く設定。これがマーカー不要のポイント)
-        camera-controls: 指で操作可能
-    -->
-    <model-viewer 
-        src="{{ url_for('static', filename='doutaku2.usdz') }}" 
-        ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
-        ar 
-        ar-modes="webxr quick-look scene-viewer" 
-        ar-placement="floor"
-        camera-controls 
-        touch-action="pan-y"
-        shadow-intensity="2"
-        exposure="1"
-        environment-image="neutral"
-        auto-rotate>
-        
-        <!-- AR開始ボタン -->
-        <button slot="ar-button" id="ar-button">
-            ✨ 銅鐸を地面に置く
-        </button>
+    <header>
+        <h1>古代の響き：銅鐸AR展示</h1>
+    </header>
 
-        <!-- 読み込み中の表示 -->
-        <div slot="poster" style="display:flex; justify-content:center; align-items:center; height:100%;">
-            <p>3Dデータを読み込み中...</p>
-        </div>
-        
-    </model-viewer>
+    <div class="container">
+        <model-viewer 
+            src="{{ url_for('static', filename='doutaku2.usdz') }}" 
+            ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
+            ar 
+            ar-modes="webxr quick-look scene-viewer" 
+            ar-placement="floor"
+            camera-controls 
+            interaction-prompt="none"
+            enable-pan
+            min-camera-orbit="auto auto auto"
+            max-camera-orbit="auto auto auto"
+            touch-action="none"
+            shadow-intensity="1"
+            auto-rotate>
+            
+            <button slot="ar-button" id="ar-button">
+                📱 カメラで地面に置く
+            </button>
+        </model-viewer>
+    </div>
+
+    <div class="description">
+        <h3>解説</h3>
+        <p>この銅鐸は、指で自由に回転させて裏側まで観察することができます。ARボタンを押すと、あなたの部屋に実物大の銅鐸を出現させることができます。</p>
+    </div>
 
 </body>
 </html>
