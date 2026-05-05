@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced White AR App</title>
+    <title>White AR App - Center Button</title>
     
-    <!-- AR用ライブラリ -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
     <style>
@@ -29,7 +28,7 @@
             --poster-color: #ffffff;
         }
 
-        /* 右上：設定メニュー */
+        /* 右上：設定メニュー（変更なし） */
         #menu-container { position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; }
         
         #menu-toggle { 
@@ -41,7 +40,6 @@
             border-radius: 12px; 
             font-size: 20px; 
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         #settings-drawer { 
@@ -53,36 +51,38 @@
             width: 250px; 
             display: none; 
             color: var(--text-color); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
             border: 1px solid #eee;
         }
 
-        .drawer-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .drawer-item label { display: block; font-size: 11px; color: #666; margin-bottom: 5px; }
-        .file-info { font-size: 13px; color: var(--accent-color); word-break: break-all; }
-
-        /* 右下：AR起動ボタン */
-        #ar-launch-container { position: absolute; bottom: 30px; right: 20px; z-index: 100; }
+        /* 【修正点】下部中央：AR起動ボタン */
+        #ar-launch-container { 
+            position: absolute; 
+            bottom: 40px; /* 下からの距離 */
+            left: 50%;
+            transform: translateX(-50%); /* 中央寄せ */
+            z-index: 100; 
+        }
         
         .action-button { 
             background: var(--accent-color); 
             color: white; 
             border: none; 
-            padding: 15px 25px; 
+            padding: 16px 32px; /* 少し大きめに */
             border-radius: 50px; 
             font-weight: bold; 
-            font-size: 14px; 
-            box-shadow: 0 4px 15px rgba(0,123,255,0.3); 
+            font-size: 16px; 
+            box-shadow: 0 4px 20px rgba(0,123,255,0.4); 
             display: flex; 
             align-items: center; 
             gap: 10px; 
             cursor: pointer;
+            white-space: nowrap;
         }
         
         .play-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; width: 100%; margin-top: 5px; cursor: pointer; }
         .instruction { 
             position: absolute; 
-            bottom: 90px; 
+            top: 80px; /* 説明文は上の方に移動してボタンとの重なりを回避 */
             width: 100%; 
             text-align: center; 
             color: #888; 
@@ -105,32 +105,21 @@
         shadow-intensity="1"
         auto-rotate>
 
-        <!-- 設定メニュー -->
         <div id="menu-container">
             <button id="menu-toggle" onclick="toggleDrawer()">⚙️</button>
             <div id="settings-drawer">
-                <div class="drawer-item">
-                    <label>iOS Data</label>
-                    <div class="file-info">static/doutaku2.usdz</div>
-                </div>
-                <div class="drawer-item">
-                    <label>Android Data</label>
-                    <div class="file-info">static/model.glb</div>
-                </div>
-                <div class="drawer-item">
-                    <label>Sound Test</label>
-                    <button class="play-btn" onclick="playSound()">🔊 サウンド再生</button>
-                </div>
-                <button class="play-btn" style="background:#888" onclick="toggleDrawer()">閉じる</button>
+                <div style="margin-bottom:10px; font-weight:bold;">Settings</div>
+                <button class="play-btn" onclick="playSound()">🔊 Sound Test</button>
+                <button class="play-btn" style="background:#888; margin-top:10px;" onclick="toggleDrawer()">Close</button>
             </div>
         </div>
 
-        <div class="instruction">ピンチで拡大 / ドラッグで回転・移動</div>
+        <div class="instruction">ピンチで拡大 / ドラッグで操作</div>
 
-        <!-- ARボタン -->
+        <!-- ボタンを中央に配置 -->
         <div id="ar-launch-container">
             <button slot="ar-button" class="action-button">
-                📷 現実空間へ
+                📷 ARカメラを起動
             </button>
         </div>
 
@@ -149,12 +138,9 @@
 
         function playSound() {
             audio.currentTime = 0;
-            audio.play().catch(e => {
-                alert("ブラウザの制限により、画面を一度タップしないと音が出ません。");
-            });
+            audio.play().catch(e => alert("Please tap the screen first."));
         }
 
-        // モデルをタップした時も音を鳴らす
         modelViewer.addEventListener('click', (e) => {
             if(e.target.tagName !== 'BUTTON' && drawer.style.display !== "block") {
                 playSound();
