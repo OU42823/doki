@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced White AR App</title>
+    
+    <!-- AR用ライブラリ -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+    <style>
+        :root { 
+            --accent-color: #007bff; 
+            --ui-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #333333;
+        }
+        
+        body { 
+            margin: 0; 
+            background-color: #ffffff; 
+            overflow: hidden; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            --poster-color: #ffffff;
+        }
+
+        /* 右上：設定メニュー */
+        #menu-container { position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; }
+        
+        #menu-toggle { 
+            background: var(--ui-bg); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid #ccc; 
+            color: var(--text-color); 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 20px; 
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #settings-drawer { 
+            background: var(--ui-bg); 
+            backdrop-filter: blur(15px); 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-top: 10px; 
+            width: 250px; 
+            display: none; 
+            color: var(--text-color); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
+            border: 1px solid #eee;
+        }
+
+        .drawer-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .drawer-item label { display: block; font-size: 11px; color: #666; margin-bottom: 5px; }
+        .file-info { font-size: 13px; color: var(--accent-color); word-break: break-all; }
+
+        /* 右下：AR起動ボタン */
+        #ar-launch-container { position: absolute; bottom: 30px; right: 20px; z-index: 100; }
+        
+        .action-button { 
+            background: var(--accent-color); 
+            color: white; 
+            border: none; 
+            padding: 15px 25px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            cursor: pointer;
+        }
+        
+        .play-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; width: 100%; margin-top: 5px; cursor: pointer; }
+        .instruction { 
+            position: absolute; 
+            bottom: 90px; 
+            width: 100%; 
+            text-align: center; 
+            color: #888; 
+            font-size: 12px; 
+            pointer-events: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <model-viewer 
+        id="main-viewer"
+        src="{{ url_for('static', filename='model.glb') }}" 
+        ios-src="{{ url_for('static', filename='model.usdz') }}"
+        ar 
+        ar-modes="quick-look scene-viewer webxr" 
+        camera-controls 
+        ar-placement="floor"
+        touch-action="pan-y"
+        shadow-intensity="1"
+        auto-rotate>
+
+        <!-- 設定メニュー -->
+        <div id="menu-container">
+            <button id="menu-toggle" onclick="toggleDrawer()">⚙️</button>
+            <div id="settings-drawer">
+                <div class="drawer-item">
+                    <label>iOS Data</label>
+                    <div class="file-info">static/doutaku2.usdz</div>
+                </div>
+                <div class="drawer-item">
+                    <label>Android Data</label>
+                    <div class="file-info">static/model.glb</div>
+                </div>
+                <div class="drawer-item">
+                    <label>Sound Test</label>
+                    <button class="play-btn" onclick="playSound()">🔊 サウンド再生</button>
+                </div>
+                <button class="play-btn" style="background:#888" onclick="toggleDrawer()">閉じる</button>
+            </div>
+        </div>
+
+        <div class="instruction">ピンチで拡大 / ドラッグで回転・移動</div>
+
+        <!-- ARボタン -->
+        <div id="ar-launch-container">
+            <button slot="ar-button" class="action-button">
+                📷 現実空間へ
+            </button>
+        </div>
+
+    </model-viewer>
+
+    <audio id="ar-audio" src="{{ url_for('static', filename='sound.mp3') }}" preload="auto"></audio>
+
+    <script>
+        const modelViewer = document.querySelector("#main-viewer");
+        const audio = document.getElementById("ar-audio");
+        const drawer = document.getElementById("settings-drawer");
+
+        function toggleDrawer() {
+            drawer.style.display = (drawer.style.display === "block") ? "none" : "block";
+        }
+
+        function playSound() {
+            audio.currentTime = 0;
+            audio.play().catch(e => {
+                alert("ブラウザの制限により、画面を一度タップしないと音が出ません。");
+            });
+        }
+
+        // モデルをタップした時も音を鳴らす
+        modelViewer.addEventListener('click', (e) => {
+            if(e.target.tagName !== 'BUTTON' && drawer.style.display !== "block") {
+                playSound();
+            }
+        });
+    </script>
+</body>
+</html>
