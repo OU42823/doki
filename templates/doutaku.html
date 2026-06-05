@@ -3,25 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銅鐸AR展示サイト</title>
+    <title>銅鐸 3Dアーカイブ</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; }
-        header { padding: 20px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h1 { margin: 0; font-size: 1.3rem; }
+        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; }
+        header { padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
         
-        .container { position: relative; width: 100%; height: 60vh; background: #eee; }
-        model-viewer { width: 100%; height: 100%; background-color: #eee; }
+        /* 3D画面を表示するエリア */
+        .viewer-container { position: relative; width: 100%; height: 65vh; background: #eef1f3; }
+        model-viewer { width: 100%; height: 100%; }
         
-        /* 📱 「地面に配置する」ボタン（これだけはAR起動に必須なので残します） */
+        /* 📱 画面の右サイドに浮かせる音声メニュー */
+        .side-menu {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+        }
+
+        /* 音声ボタンのデザイン */
+        .menu-btn {
+            background-color: #e74c3c; color: white; border: none; border-radius: 8px;
+            padding: 14px 20px; font-size: 0.95rem; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;
+        }
+        /* 音が鳴っている時のボタンの色（シックな紺色） */
+        .menu-btn.playing {
+            background-color: #34495e; box-shadow: 0 4px 10px rgba(52, 73, 94, 0.3);
+        }
+
+        /* 「部屋に配置する（AR）」ボタンの見た目（中央下） */
         #ar-button {
-            background-color: #2c3e50; color: white; border-radius: 30px; border: none;
-            padding: 12px 24px; font-weight: bold; position: absolute; bottom: 20px;
-            left: 50%; transform: translateX(-50%); z-index: 99999; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.95); color: #2c3e50; 
+            border: 1px solid #cbd5e1; border-radius: 30px;
+            padding: 12px 24px; font-size: 0.9rem; font-weight: bold;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;
         }
         
-        .info { padding: 20px; background: white; }
+        .info-panel { padding: 20px; background: white; }
+        .info-panel h2 { margin-top: 0; font-size: 1.1rem; }
+        .info-panel p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -30,9 +51,9 @@
 
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
-    <div class="container">
+    <div class="viewer-container">
+        
         <model-viewer 
-            id="doutaku-viewer"
             src="{{ url_for('static', filename='doutaku2.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr" ar-placement="floor"
@@ -42,39 +63,43 @@
             interpolation-decay="10" orbit-sensitivity="1.8"
             touch-action="none" shadow-intensity="1">
             
-            <button slot="ar-button" id="ar-button">✨ 地面に配置する</button>
+            <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
             
         </model-viewer>
+
+        <div class="side-menu">
+            <button id="play-btn" class="menu-btn" onclick="toggleAudio()">
+                <span>🎵</span> <span id="btn-text">音を鳴らす</span>
+            </button>
+        </div>
+
     </div>
 
-    <div class="info">
-        <h2>操作ガイド</h2>
+    <div class="info-panel">
+        <h2>作品解説</h2>
         <p>
-            ・<b>全方向回転</b>：指1本で上下左右、裏側までスムーズに回せます。<br>
-            ・<b>🔊 音の鳴らし方</b>：画面の<b>銅鐸をポンッとタップ（またはクリック）</b>すると音が鳴ります。もう一度タップすると止まります。（ARモード中も有効です）
+            画面上の銅鐸は、指で上下左右、裏側まで自由に回転させて細部を観察することができます。<br>
+            右側のサイドメニューから音声を再生し、当時の響きを感じながら鑑賞してください。
         </p>
     </div>
 
     <script>
         const audio = document.getElementById('doutaku-sound');
-        const viewer = document.getElementById('doutaku-viewer');
+        const btn = document.getElementById('play-btn');
+        const btnText = document.getElementById('btn-text');
 
-        // 銅鐸がタップされたかを判定する仕組み
-        viewer.addEventListener('click', (event) => {
-            // タップされた位置に3Dモデルが存在するかをチェック
-            const hit = viewer.positionAndNormalFromPoint(event.clientX, event.clientY);
-            
-            // 銅鐸の体（モデル）の上をタップしていた場合
-            if (hit != null) {
-                if (audio.paused) {
-                    audio.play().catch(err => console.log("再生エラー:", err));
-                    console.log("銅鐸をタップ: 再生開始");
-                } else {
-                    audio.pause();
-                    console.log("銅鐸をタップ: 一時停止");
-                }
+        // 音のオン・オフを切り替える関数（ブラウザ画面なので100%確実に作動します）
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().catch(err => console.log("再生エラー:", err));
+                btnText.innerText = "音を止める";
+                btn.classList.add('playing');
+            } else {
+                audio.pause();
+                btnText.innerText = "音を鳴らす";
+                btn.classList.remove('playing');
             }
-        });
+        }
     </script>
 
 </body>
