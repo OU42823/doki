@@ -9,13 +9,26 @@
         body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; }
         header { padding: 20px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         h1 { margin: 0; font-size: 1.3rem; }
+        
+        /* 3D表示エリア */
         .container { position: relative; width: 100%; height: 60vh; background: #eee; }
         model-viewer { width: 100%; height: 100%; background-color: #eee; }
+        
+        /* ✨ 地面に配置する（AR）ボタン */
         #ar-button {
             background-color: #2c3e50; color: white; border-radius: 30px; border: none;
             padding: 12px 24px; font-weight: bold; position: absolute; bottom: 20px;
-            left: 50%; transform: translateX(-50%); z-index: 10;
+            left: 5%; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
+
+        /* 🔊 音を鳴らすボタン（3D画面の右下に配置） */
+        #play-btn {
+            background-color: #e74c3c; color: white; border-radius: 30px; border: none;
+            padding: 12px 24px; font-weight: bold; position: absolute; bottom: 20px;
+            right: 5%; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
         .info { padding: 20px; background: white; }
     </style>
 </head>
@@ -23,29 +36,23 @@
 
     <header><h1>銅鐸 3Dアーカイブ</h1></header>
 
+    <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
+
     <div class="container">
         <model-viewer 
             src="{{ url_for('static', filename='doutaku2.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr quick-look scene-viewer" ar-placement="floor"
-            camera-controls 
-            interaction-prompt="none"
-
-            /* --- 回転の制限を完全に撤廃する魔法の4行 --- */
-            min-polar-angle="0deg" 
-            max-polar-angle="180deg"
-            min-azimuth-angle="-infinity"
-            max-azimuth-angle="infinity"
-            
-            /* --- 反応を速くし、もさもさ感を消す --- */
-            interpolation-decay="10" 
-            orbit-sensitivity="1.8"
-            /* -------------------------------------- */
-
-            touch-action="none"
-            shadow-intensity="1">
+            camera-controls interaction-prompt="none"
+            min-polar-angle="0deg" max-polar-angle="180deg"
+            min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
+            interpolation-decay="10" orbit-sensitivity="1.8"
+            touch-action="none" shadow-intensity="1">
             
             <button slot="ar-button" id="ar-button">✨ 地面に配置する</button>
+            
+            <button id="play-btn" onclick="toggleAudio()">🎵 音を鳴らす</button>
+            
         </model-viewer>
     </div>
 
@@ -56,6 +63,23 @@
             ・<b>ズーム</b>：指2本でピンチ操作。
         </p>
     </div>
+
+    <script>
+        const audio = document.getElementById('doutaku-sound');
+        const btn = document.getElementById('play-btn');
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = "🔊 音を止める";
+                btn.style.backgroundColor = "#7f8c8d"; // 再生中はグレーに
+            } else {
+                audio.pause();
+                btn.innerText = "🎵 音を鳴らす";
+                btn.style.backgroundColor = "#e74c3c"; // 停止中は赤に
+            }
+        }
+    </script>
 
 </body>
 </html>
