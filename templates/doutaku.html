@@ -13,20 +13,11 @@
         .container { position: relative; width: 100%; height: 60vh; background: #eee; }
         model-viewer { width: 100%; height: 100%; background-color: #eee; }
         
-        /* 📱 「地面に配置する」ボタン */
+        /* 📱 「地面に配置する」ボタン（これだけはAR起動に必須なので残します） */
         #ar-button {
             background-color: #2c3e50; color: white; border-radius: 30px; border: none;
             padding: 12px 24px; font-weight: bold; position: absolute; bottom: 20px;
-            left: 5%; z-index: 99999; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-
-        /* 🔊 ARカメラの映像の上にも強制的に浮き出させる「音のボタン」 */
-        #play-btn {
-            background-color: #e74c3c; color: white; border-radius: 30px; border: none;
-            padding: 12px 24px; font-weight: bold; position: absolute; 
-            bottom: 20px; right: 5%; z-index: 99999; /* 👈 最大値にしてカメラ映像より前に出す */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            left: 50%; transform: translateX(-50%); z-index: 99999; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             cursor: pointer;
         }
         
@@ -41,6 +32,7 @@
 
     <div class="container">
         <model-viewer 
+            id="doutaku-viewer"
             src="{{ url_for('static', filename='doutaku2.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr" ar-placement="floor"
@@ -53,33 +45,36 @@
             <button slot="ar-button" id="ar-button">✨ 地面に配置する</button>
             
         </model-viewer>
-
-        <button id="play-btn" onclick="toggleAudio()">🎵 音を鳴らす</button>
     </div>
 
     <div class="info">
         <h2>操作ガイド</h2>
         <p>
             ・<b>全方向回転</b>：指1本で上下左右、裏側までスムーズに回せます。<br>
-            ・<b>AR体験</b>：カメラ起動中も、右下のボタンから音のON/OFFが可能です。（※AndroidのWebXR対応機種のみ）
+            ・<b>🔊 音の鳴らし方</b>：画面の<b>銅鐸をポンッとタップ（またはクリック）</b>すると音が鳴ります。もう一度タップすると止まります。（ARモード中も有効です）
         </p>
     </div>
 
     <script>
         const audio = document.getElementById('doutaku-sound');
-        const btn = document.getElementById('play-btn');
+        const viewer = document.getElementById('doutaku-viewer');
 
-        function toggleAudio() {
-            if (audio.paused) {
-                audio.play().catch(err => console.log("再生エラー:", err));
-                btn.innerText = "🔊 音を止める";
-                btn.style.backgroundColor = "#7f8c8d";
-            } else {
-                audio.pause();
-                btn.innerText = "🎵 音を鳴らす";
-                btn.style.backgroundColor = "#e74c3c";
+        // 銅鐸がタップされたかを判定する仕組み
+        viewer.addEventListener('click', (event) => {
+            // タップされた位置に3Dモデルが存在するかをチェック
+            const hit = viewer.positionAndNormalFromPoint(event.clientX, event.clientY);
+            
+            // 銅鐸の体（モデル）の上をタップしていた場合
+            if (hit != null) {
+                if (audio.paused) {
+                    audio.play().catch(err => console.log("再生エラー:", err));
+                    console.log("銅鐸をタップ: 再生開始");
+                } else {
+                    audio.pause();
+                    console.log("銅鐸をタップ: 一時停止");
+                }
             }
-        }
+        });
     </script>
 
 </body>
