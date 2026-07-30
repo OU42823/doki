@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>銅鐸 3Dアーカイブ</title>
-    <!-- model-viewerの読み込み -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; }
@@ -27,12 +26,11 @@
             box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); cursor: pointer;
             display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;
         }
-        /* 音が鳴っている時のボタンの色（シックな紺色） */
         .menu-btn.playing {
             background-color: #34495e; box-shadow: 0 4px 10px rgba(52, 73, 94, 0.3);
         }
 
-        /* 「部屋に配置する（AR）」ボタンの見た目（中央下） */
+        /* 「部屋に配置する（AR）」ボタン */
         #ar-button {
             background-color: rgba(255, 255, 255, 0.95); color: #2c3e50; 
             border: 1px solid #cbd5e1; border-radius: 30px;
@@ -62,9 +60,8 @@
             ar ar-modes="webxr" ar-placement="floor"
             camera-controls interaction-prompt="none"
             
-            /* 💡 カメラ距離（引き具合）を調整して、モデルの初期表示サイズを小さく収める設定 */
-            camera-orbit="0deg 75deg 700%"
-            field-of-view="auto"
+            /* 💡 自動拡大を解除し、カメラの広角（FOV）を絞ることで強制的に縮小表示 */
+            field-of-view="100deg"
             
             min-polar-angle="0deg" max-polar-angle="180deg"
             min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
