@@ -10,16 +10,13 @@
         header { padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
         
-        /* 3D画面を表示するエリア */
         .viewer-container { position: relative; width: 100%; height: 60vh; background: #eef1f3; }
         model-viewer { width: 100%; height: 100%; }
         
-        /* 📱 画面の右サイドに浮かせる音声メニュー */
         .side-menu {
             position: absolute; top: 20px; right: 20px; z-index: 10;
         }
 
-        /* 音声ボタンのデザイン */
         .menu-btn {
             background-color: #e74c3c; color: white; border: none; border-radius: 8px;
             padding: 14px 20px; font-size: 0.95rem; font-weight: bold;
@@ -30,7 +27,6 @@
             background-color: #34495e; box-shadow: 0 4px 10px rgba(52, 73, 94, 0.3);
         }
 
-        /* 「部屋に配置する（AR）」ボタン */
         #ar-button {
             background-color: rgba(255, 255, 255, 0.95); color: #2c3e50; 
             border: 1px solid #cbd5e1; border-radius: 30px;
@@ -48,32 +44,31 @@
 
     <header><h1>銅鐸 3Dアーカイブ</h1></header>
 
-    <!-- 🔊 音声ファイル -->
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
         
-        <!-- 3Dオブジェクト画面 -->
         <model-viewer 
             src="{{ url_for('static', filename='doutaku2.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr" ar-placement="floor"
             camera-controls interaction-prompt="none"
             
-            /* 💡 自動拡大を解除し、カメラの広角（FOV）を絞ることで強制的に縮小表示 */
-            field-of-view="300deg"
+            /* 💡 オブジェクト画面のカメラ画角 */
+            field-of-view="100deg"
+            
+            /* 💡 AR表示時のモデルのサイズ倍率（X, Y, Z軸を約20%の小ささに指定） */
+            scale="0.2 0.2 0.2"
             
             min-polar-angle="0deg" max-polar-angle="180deg"
             min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
             interpolation-decay="10" orbit-sensitivity="1.8"
             touch-action="none" shadow-intensity="1">
             
-            <!-- ARモードへ切り替えるボタン -->
             <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
             
         </model-viewer>
 
-        <!-- 📱 右サイドの音声コントロールメニュー -->
         <div class="side-menu">
             <button id="play-btn" class="menu-btn" onclick="toggleAudio()">
                 <span>🎵</span> <span id="btn-text">音を鳴らす</span>
