@@ -49,7 +49,7 @@
     <div class="viewer-container">
         
         <model-viewer 
-            src="{{ url_for('static', filename='doutaku2.usdz') }}" 
+            src="{{ url_for('static', filename='doutaku.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku.usdz') }}"
             ar ar-modes="webxr" ar-placement="floor"
             camera-controls interaction-prompt="none"
@@ -58,7 +58,7 @@
             field-of-view="50deg"
             
             /* 💡 AR表示時のモデルのサイズ倍率（X, Y, Z軸を約20%の小ささに指定） */
-            scale="0.1 0.1 0.1"
+            scale="0.2 0.2 0.2"
             
             min-polar-angle="0deg" max-polar-angle="180deg"
             min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
