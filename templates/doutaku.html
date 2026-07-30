@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>銅鐸 3Dアーカイブ</title>
+    <!-- model-viewerの読み込み -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; }
         header { padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
         
-        /* 3D画面を表示するエリア */
-        .viewer-container { position: relative; width: 100%; height: 65vh; background: #eef1f3; }
+        /* 3D画面を表示するエリア（画面の縦幅に合わせて高さを自動調整） */
+        .viewer-container { position: relative; width: 100%; height: 60vh; background: #eef1f3; }
         model-viewer { width: 100%; height: 100%; }
         
         /* 📱 画面の右サイドに浮かせる音声メニュー */
@@ -49,24 +50,33 @@
 
     <header><h1>銅鐸 3Dアーカイブ</h1></header>
 
+    <!-- 🔊 音声ファイル -->
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
         
+        <!-- 3Dオブジェクト画面 -->
         <model-viewer 
             src="{{ url_for('static', filename='doutaku2.usdz') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr" ar-placement="floor"
             camera-controls interaction-prompt="none"
+            
+            /* 💡 モデルの境界線を自動計算し、画面にぴったり収める設定 */
+            bounds="tight"
+            field-of-view="auto"
+            
             min-polar-angle="0deg" max-polar-angle="180deg"
             min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
             interpolation-decay="10" orbit-sensitivity="1.8"
             touch-action="none" shadow-intensity="1">
             
+            <!-- ARモードへ切り替えるボタン -->
             <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
             
         </model-viewer>
 
+        <!-- 📱 右サイドの音声コントロールメニュー -->
         <div class="side-menu">
             <button id="play-btn" class="menu-btn" onclick="toggleAudio()">
                 <span>🎵</span> <span id="btn-text">音を鳴らす</span>
@@ -88,7 +98,6 @@
         const btn = document.getElementById('play-btn');
         const btnText = document.getElementById('btn-text');
 
-        // 音のオン・オフを切り替える関数（ブラウザ画面なので100%確実に作動します）
         function toggleAudio() {
             if (audio.paused) {
                 audio.play().catch(err => console.log("再生エラー:", err));
