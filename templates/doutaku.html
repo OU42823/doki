@@ -5,18 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>銅鐸 3Dアーカイブ - 選択</title>
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        header { padding: 30px; text-align: center; }
+        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        header { padding: 20px; text-align: center; }
         h1 { margin: 0; font-size: 1.5rem; color: #2c3e50; }
-        p { color: #64748b; font-size: 0.95rem; text-align: center; margin-bottom: 30px; }
-        .menu-container { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 320px; }
+        p { color: #64748b; font-size: 0.95rem; text-align: center; margin-bottom: 20px; }
+        
+        .menu-container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; margin-bottom: 25px; }
         .select-btn {
             background-color: #ffffff; color: #2c3e50; text-decoration: none;
-            border: 2px solid #cbd5e1; border-radius: 12px; padding: 20px;
+            border: 2px solid #cbd5e1; border-radius: 12px; padding: 16px;
             font-size: 1.05rem; font-weight: bold; text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all 0.2s ease;
         }
         .select-btn:hover { background-color: #3498db; color: white; border-color: #3498db; }
+
+        /* 操作説明カードのスタイル */
+        .instructions {
+            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: 15px 20px; width: 100%; max-width: 320px; box-sizing: border-box;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .instructions h3 { margin: 0 0 10px 0; font-size: 0.95rem; color: #1e293b; text-align: center; }
+        .instructions ul { margin: 0; padding-left: 20px; font-size: 0.85rem; color: #475569; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -24,9 +34,20 @@
         <h1>銅鐸 3Dアーカイブ</h1>
         <p>見るモデルを選択してください</p>
     </header>
+
     <div class="menu-container">
-        <a href="{{ url_for('model1') }}" class="select-btn">✨ モデル 1 を開く</a>
-        <a href="{{ url_for('model2') }}" class="select-btn">✨ モデル 2 を開く</a>
+        <a href="{{ url_for('model1') }}" class="select-btn">✨ 銅鐸を開く</a>
+        <a href="{{ url_for('model2') }}" class="select-btn">✨ 旧銅鐸を開く</a>
+    </div>
+
+    <!-- 操作方法の説明 -->
+    <div class="instructions">
+        <h3>📱 3Dモデルの操作方法</h3>
+        <ul>
+            <li><strong>1本指スワイプ：</strong> モデルの回転</li>
+            <li><strong>2本指ピンチ：</strong> 拡大・縮小（ズーム）</li>
+            <li><strong>2本指ドラッグ：</strong> 平行移動</li>
+        </ul>
     </div>
 </body>
 </html>
