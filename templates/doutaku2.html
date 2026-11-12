@@ -18,7 +18,6 @@
         .viewer-container { position: relative; width: 100%; height: 60vh; background: #eef1f3; }
         model-viewer { width: 100%; height: 100%; }
         
-        /* 📱 右サイドの操作メニュー */
         .side-menu { position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
 
         .menu-btn {
@@ -51,9 +50,10 @@
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
+        <!-- 💡 モデル2は glb 形式をメインに指定 -->
         <model-viewer 
             id="viewer"
-            src="{{ url_for('static', filename='doutaku2.usdz') }}" 
+            src="{{ url_for('static', filename='doutaku2.glb') }}" 
             ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr quick-look" ar-placement="floor"
             ar-scale="auto"
@@ -67,7 +67,6 @@
             <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
         </model-viewer>
 
-        <!-- 📱 右サイドの操作メニュー -->
         <div class="side-menu">
             <button id="play-btn" class="menu-btn" onclick="toggleAudio()">
                 <span>🎵</span> <span id="btn-text">音を鳴らす</span>
