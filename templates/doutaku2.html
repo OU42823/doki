@@ -50,19 +50,21 @@
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
-        <!-- 💡 モデル2は glb 形式をメインに指定 -->
+        <!-- 💡 ズーム範囲拡張（自由な拡大縮小対応）＆クロスプラットフォーム対応 -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku2.glb') }}" 
-            ios-src="{{ url_for('static', filename='doutaku2.glb') }}"
+            ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
             ar ar-modes="webxr quick-look" ar-placement="floor"
             ar-scale="auto"
             camera-controls interaction-prompt="none"
-            field-of-view="100deg"
-            min-polar-angle="0deg" max-polar-angle="180deg"
-            min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
-            interpolation-decay="10" orbit-sensitivity="1.8"
-            touch-action="none" shadow-intensity="1">
+            field-of-view="30deg"
+            min-field-of-view="10deg"
+            max-field-of-view="120deg"
+            interpolation-decay="10" 
+            orbit-sensitivity="1.8"
+            touch-action="pan-y" 
+            shadow-intensity="1">
             
             <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
         </model-viewer>
@@ -79,7 +81,7 @@
 
     <div class="info-panel">
         <h2>モデル 2 の解説</h2>
-        <p>画面上のボタンから音声の再生・停止を切り替えることができます。</p>
+        <p>画面上で自由に拡大・縮小・回転させて鑑賞できます。</p>
     </div>
 
     <script>
@@ -102,7 +104,7 @@
 
         function resetModel() {
             viewer.cameraOrbit = 'auto auto auto';
-            viewer.fieldOfView = '100deg';
+            viewer.fieldOfView = '30deg';
             viewer.jumpCameraToGoal();
         }
     </script>
