@@ -34,9 +34,10 @@
     <div class="viewer-container">
         <div id="hint" class="hint">💡 モデルをダブルタップして音のON/OFF</div>
         
+        <!-- 💡 ファイル名が doutaku.glb の場合はこちらを指定します -->
         <model-viewer 
             id="viewer"
-            src="{{ url_for('static', filename='doutaku1.glb') }}" 
+            src="{{ url_for('static', filename='doutaku.glb') }}" 
             ar ar-modes="webxr quick-look" 
             ar-scale="auto"
             camera-controls 
@@ -54,7 +55,6 @@
         const hint = document.getElementById('hint');
         const viewer = document.getElementById('viewer');
 
-        // ダブルタップで音声切り替え
         let lastTapTime = 0;
         viewer.addEventListener('click', () => {
             const currentTime = new Date().getTime();
