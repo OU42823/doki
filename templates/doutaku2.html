@@ -19,15 +19,40 @@
             background: rgba(0, 0, 0, 0.75); color: white; padding: 10px 20px;
             border-radius: 20px; font-size: 0.9rem; pointer-events: none; text-align: center;
         }
+
+        /* ⏳ ローディング画面のデザイン */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #1e293b; color: white; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid #3498db; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loading-text { font-size: 1rem; font-weight: bold; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+    <!-- ⏳ ローディング画面 -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">カメラとARを準備中...</div>
+    </div>
+
     <a href="{{ url_for('index') }}" class="back-link">⬅ 戻る</a>
     <div id="hint" class="hint">💡 マーカーをカメラに写し、モデルをダブルタップして音ON/OFF</div>
 
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
-    <a-scene mindar-image="imageTargetSrc: {{ url_for('static', filename='target.mind') }};" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene id="ar-scene" mindar-image="imageTargetSrc: {{ url_for('static', filename='target.mind') }};" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <a-assets>
             <a-asset-item id="model2" src="{{ url_for('static', filename='doutaku2.glb') }}"></a-asset-item>
         </a-assets>
@@ -50,6 +75,15 @@
         const audio = document.getElementById('doutaku-sound');
         const hint = document.getElementById('hint');
         const modelEl = document.getElementById('doutaku-model');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const sceneEl = document.getElementById('ar-scene');
+
+        sceneEl.addEventListener('arReady', () => {
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        });
 
         let lastTapTime = 0;
         modelEl.addEventListener('click', () => {
