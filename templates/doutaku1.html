@@ -6,30 +6,34 @@
     <title>銅鐸 モデル 1</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #1e293b; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        header { padding: 12px 20px; background: rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        body { margin: 0; font-family: sans-serif; background-color: #000; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* 📷 背景にカメラ映像を全画面表示 */
+        #camera-video {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            object-fit: cover; z-index: 0; pointer-events: none;
+        }
+
+        header { padding: 12px 20px; background: rgba(0,0,0,0.6); display: flex; justify-content: space-between; align-items: center; z-index: 10; backdrop-filter: blur(5px); }
         h1 { margin: 0; font-size: 1rem; text-align: center; flex: 1; }
         .back-link { text-decoration: none; background: #e2e8f0; color: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
         
-        .viewer-container { position: relative; flex: 1; width: 100%; }
-        model-viewer { width: 100%; height: 100%; background-color: #1e293b; }
+        .viewer-container { position: relative; flex: 1; width: 100%; z-index: 5; }
+        
+        /* model-viewerの背景を透明にしてカメラ映像を透けさせる */
+        model-viewer { width: 100%; height: 100%; background: transparent; }
 
         .hint {
-            position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); z-index: 10;
-            background: rgba(0, 0, 0, 0.75); color: white; padding: 8px 18px;
-            border-radius: 20px; font-size: 0.85rem; pointer-events: none; text-align: center; white-space: nowrap;
-        }
-
-        /* 📷 スマホのカメラ（AR）を起動するボタン */
-        #ar-button {
-            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: #e74c3c; color: white; border: none; padding: 12px 24px;
-            border-radius: 25px; font-weight: bold; font-size: 0.95rem; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 10;
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
+            background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 0.9rem; pointer-events: none; text-align: center; white-space: nowrap;
         }
     </style>
 </head>
 <body>
+
+    <!-- 📷 リアルタイムカメラ背景 -->
+    <video id="camera-video" autoplay playsinline muted></video>
 
     <header>
         <a href="{{ url_for('index') }}" class="back-link">⬅ 戻る</a>
@@ -40,26 +44,34 @@
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
-        <div id="hint" class="hint">💡 ダブルタップで音声ON/OFF</div>
+        <div id="hint" class="hint">💡 モデルをダブルタップして音声ON/OFF</div>
         
-        <!-- src はお前のファイル名 doutaku.glb に合わせてるで！ -->
+        <!-- ファイル名を doutaku.glb に正確に指定 -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku.glb') }}" 
-            ar 
-            ar-modes="webxr scene-viewer quick-look" 
-            ar-scale="auto"
             camera-controls 
             touch-action="pan-y"
             shadow-intensity="1">
-            
-            <button slot="ar-button" id="ar-button">
-                📷 カメラで空間に表示（AR）
-            </button>
         </model-viewer>
     </div>
 
     <script>
+        // 📷 カメラを起動して背景に映す処理
+        async function startCamera() {
+            const videoElement = document.getElementById('camera-video');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' } // 外カメラを優先
+                });
+                videoElement.srcObject = stream;
+            } catch (err) {
+                console.log("カメラ起動エラー（背景なしで続行します）:", err);
+            }
+        }
+        startCamera();
+
+        // 🎵 ダブルタップ音声再生
         const audio = document.getElementById('doutaku-sound');
         const hint = document.getElementById('hint');
         const viewer = document.getElementById('viewer');
