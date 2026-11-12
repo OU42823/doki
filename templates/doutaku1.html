@@ -6,12 +6,12 @@
     <title>銅鐸 モデル 1</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #000; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background-color: #1e293b; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* 📷 背景にカメラ映像を全画面表示 */
+        /* カメラ映像（背景） */
         #camera-video {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            object-fit: cover; z-index: 0; pointer-events: none;
+            object-fit: cover; z-index: 0; pointer-events: none; display: none;
         }
 
         header { padding: 12px 20px; background: rgba(0,0,0,0.6); display: flex; justify-content: space-between; align-items: center; z-index: 10; backdrop-filter: blur(5px); }
@@ -20,8 +20,8 @@
         
         .viewer-container { position: relative; flex: 1; width: 100%; z-index: 5; }
         
-        /* model-viewerの背景を透明にしてカメラ映像を透けさせる */
-        model-viewer { width: 100%; height: 100%; background: transparent; }
+        /* カメラが起動したときは透明、起動しないときは背景色を表示 */
+        model-viewer { width: 100%; height: 100%; background-color: #1e293b; }
 
         .hint {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
@@ -32,7 +32,7 @@
 </head>
 <body>
 
-    <!-- 📷 リアルタイムカメラ背景 -->
+    <!-- カメラ背景用ビデオ要素 -->
     <video id="camera-video" autoplay playsinline muted></video>
 
     <header>
@@ -46,7 +46,7 @@
     <div class="viewer-container">
         <div id="hint" class="hint">💡 モデルをダブルタップして音声ON/OFF</div>
         
-        <!-- ファイル名を doutaku.glb に正確に指定 -->
+        <!-- 正しいファイル名 doutaku.glb を指定 -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku.glb') }}" 
@@ -57,21 +57,31 @@
     </div>
 
     <script>
-        // 📷 カメラを起動して背景に映す処理
+        // カメラを安全に起動する処理
         async function startCamera() {
             const videoElement = document.getElementById('camera-video');
+            const viewer = document.getElementById('viewer');
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.log("このブラウザはカメラAPIをサポートしていません。");
+                return;
+            }
+
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' } // 外カメラを優先
+                    video: { facingMode: 'environment' }
                 });
                 videoElement.srcObject = stream;
+                videoElement.style.display = 'block'; // カメラ起動成功時に表示
+                viewer.style.backgroundColor = 'transparent'; // モデルの背景を透明にしてカメラを透けさせる
             } catch (err) {
-                console.log("カメラ起動エラー（背景なしで続行します）:", err);
+                console.log("カメラの起動が許可されなかったか、HTTPS環境ではありません:", err);
+                // カメラが使えなくてもアプリが止まらず、通常の背景色でモデルを表示し続けます
             }
         }
         startCamera();
 
-        // 🎵 ダブルタップ音声再生
+        // ダブルタップ音声再生
         const audio = document.getElementById('doutaku-sound');
         const hint = document.getElementById('hint');
         const viewer = document.getElementById('viewer');
