@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銅鐸 3Dビューア - モデル1</title>
-    <!-- model-viewer ライブラリの読み込み -->
+    <title>銅鐸 モデル 1</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         body { margin: 0; font-family: sans-serif; background-color: #1e293b; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -16,17 +15,9 @@
         model-viewer { width: 100%; height: 100%; background-color: #1e293b; }
 
         .hint {
-            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 10;
-            background: rgba(0, 0, 0, 0.75); color: white; padding: 8px 18px;
-            border-radius: 20px; font-size: 0.85rem; pointer-events: none; text-align: center; white-space: nowrap;
-        }
-
-        /* AR起動ボタンのカスタマイズ */
-        #ar-button {
-            position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%);
-            background: #3498db; color: white; border: none; padding: 10px 20px;
-            border-radius: 20px; font-weight: bold; font-size: 0.9rem; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10;
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
+            background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 0.9rem; pointer-events: none; text-align: center; white-space: nowrap;
         }
     </style>
 </head>
@@ -43,20 +34,13 @@
     <div class="viewer-container">
         <div id="hint" class="hint">💡 モデルをダブルタップして音声ON/OFF</div>
         
-        <!-- .glb のみを使用し、全端末のARモード（webxr, scene-viewer, quick-look）に対応 -->
+        <!-- 余計なar属性を外し、純粋にモデルをグリグリ動かして見せる仕様 -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku1.glb') }}" 
-            ar 
-            ar-modes="webxr scene-viewer quick-look" 
-            ar-scale="auto"
             camera-controls 
             touch-action="pan-y"
             shadow-intensity="1">
-            
-            <button slot="ar-button" id="ar-button">
-                📷 空間（AR）で見る
-            </button>
         </model-viewer>
     </div>
 
@@ -65,7 +49,6 @@
         const hint = document.getElementById('hint');
         const viewer = document.getElementById('viewer');
 
-        // ダブルタップで音声切り替え
         let lastTapTime = 0;
         viewer.addEventListener('click', () => {
             const currentTime = new Date().getTime();
