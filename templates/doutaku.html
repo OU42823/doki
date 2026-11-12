@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>銅鐸 3Dアーカイブ</title>
+    <title>銅鐸 3Dアーカイブ - 選択</title>
     <style>
         body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
         header { padding: 30px; text-align: center; }
@@ -22,11 +22,11 @@
 <body>
     <header>
         <h1>銅鐸 3Dアーカイブ</h1>
-        <p>モデルを選択してください</p>
+        <p>見るモデルを選択してください</p>
     </header>
     <div class="menu-container">
-        <a href="{{ url_for('model1') }}" class="select-btn">✨ モデル 1 を見る</a>
-        <a href="{{ url_for('model2') }}" class="select-btn">✨ モデル 2 を見る</a>
+        <a href="{{ url_for('model1') }}" class="select-btn">✨ モデル 1 を開く</a>
+        <a href="{{ url_for('model2') }}" class="select-btn">✨ モデル 2 を開く</a>
     </div>
 </body>
 </html>
