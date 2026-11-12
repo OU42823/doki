@@ -15,9 +15,17 @@
         model-viewer { width: 100%; height: 100%; background-color: #1e293b; }
 
         .hint {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
-            background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px;
-            border-radius: 20px; font-size: 0.9rem; pointer-events: none; text-align: center; white-space: nowrap;
+            position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); z-index: 10;
+            background: rgba(0, 0, 0, 0.75); color: white; padding: 8px 18px;
+            border-radius: 20px; font-size: 0.85rem; pointer-events: none; text-align: center; white-space: nowrap;
+        }
+
+        /* 📷 スマホのカメラ（AR）を起動するボタン */
+        #ar-button {
+            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: #e74c3c; color: white; border: none; padding: 12px 24px;
+            border-radius: 25px; font-weight: bold; font-size: 0.95rem; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 10;
         }
     </style>
 </head>
@@ -32,15 +40,22 @@
     <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
 
     <div class="viewer-container">
-        <div id="hint" class="hint">💡 モデルをダブルタップして音声ON/OFF</div>
+        <div id="hint" class="hint">💡 ダブルタップで音声ON/OFF</div>
         
-        <!-- 余計なar属性を外し、純粋にモデルをグリグリ動かして見せる仕様 -->
+        <!-- src はお前のファイル名 doutaku.glb に合わせてるで！ -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku.glb') }}" 
+            ar 
+            ar-modes="webxr scene-viewer quick-look" 
+            ar-scale="auto"
             camera-controls 
             touch-action="pan-y"
             shadow-intensity="1">
+            
+            <button slot="ar-button" id="ar-button">
+                📷 カメラで空間に表示（AR）
+            </button>
         </model-viewer>
     </div>
 
