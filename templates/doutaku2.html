@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>銅鐸 モデル 2</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; }
+        header { padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; px: 20px; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; text-align: center; }
+        
+        .back-link {
+            text-decoration: none; background: #e2e8f0; color: #334155; padding: 6px 12px;
+            border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-left: 10px;
+        }
+
+        .viewer-container { position: relative; width: 100%; height: 60vh; background: #eef1f3; }
+        model-viewer { width: 100%; height: 100%; }
+        
+        .side-menu { position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
+
+        .menu-btn {
+            background-color: #e74c3c; color: white; border: none; border-radius: 8px;
+            padding: 12px 16px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 6px;
+        }
+        .menu-btn.playing { background-color: #34495e; }
+        .reset-btn { background-color: #3498db; }
+
+        #ar-button {
+            background-color: rgba(255, 255, 255, 0.95); color: #2c3e50; border: 1px solid #cbd5e1;
+            border-radius: 30px; padding: 12px 24px; font-size: 0.9rem; font-weight: bold;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); cursor: pointer;
+        }
+        
+        .info-panel { padding: 20px; background: white; }
+        .info-panel h2 { margin-top: 0; font-size: 1.1rem; }
+        .info-panel p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="{{ url_for('index') }}" class="back-link">⬅ 戻る</a>
+        <h1>銅鐸 モデル 2</h1>
+        <div style="width: 50px;"></div>
+    </header>
+
+    <audio id="doutaku-sound" src="{{ url_for('static', filename='doutakuoto.mp3') }}" loop></audio>
+
+    <div class="viewer-container">
+        <!-- 💡 doutaku2.usdz を読み込み -->
+        <model-viewer 
+            id="viewer"
+            src="{{ url_for('static', filename='doutaku2.usdz') }}" 
+            ios-src="{{ url_for('static', filename='doutaku2.usdz') }}"
+            ar ar-modes="webxr quick-look" ar-placement="floor"
+            ar-scale="auto"
+            camera-controls interaction-prompt="none"
+            field-of-view="100deg"
+            min-polar-angle="0deg" max-polar-angle="180deg"
+            min-azimuth-angle="-infinity" max-azimuth-angle="infinity"
+            interpolation-decay="10" orbit-sensitivity="1.8"
+            touch-action="none" shadow-intensity="1">
+            
+            <button slot="ar-button" id="ar-button">✨ 部屋に配置してみる（AR）</button>
+        </model-viewer>
+
+        <div class="side-menu">
+            <button id="play-btn" class="menu-btn" onclick="toggleAudio()">
+                <span>🎵</span> <span id="btn-text">音を鳴らす</span>
+            </button>
+            <button class="menu-btn reset-btn" onclick="resetModel()">
+                <span>🔄</span> 位置リセット
+            </button>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h2>モデル 2 の解説</h2>
+        <p>画面上で自由に回転させて細部を観察できます。サイドメニューから音声を再生可能です。</p>
+    </div>
+
+    <script>
+        const audio = document.getElementById('doutaku-sound');
+        const btn = document.getElementById('play-btn');
+        const btnText = document.getElementById('btn-text');
+        const viewer = document.getElementById('viewer');
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().catch(err => console.log("再生エラー:", err));
+                btnText.innerText = "音を止める";
+                btn.classList.add('playing');
+            } else {
+                audio.pause();
+                btnText.innerText = "音を鳴らす";
+                btn.classList.remove('playing');
+            }
+        }
+
+        function resetModel() {
+            viewer.cameraOrbit = 'auto auto auto';
+            viewer.fieldOfView = '100deg';
+            viewer.jumpCameraToGoal();
+        }
+    </script>
+</body>
+</html>
