@@ -33,7 +33,7 @@
 
     <header>
         <a href="{{ url_for('index') }}" class="back-link">⬅ 戻る</a>
-        <h1>モデル 2</h1>
+        <h1></h1>
         <div style="width: 45px;"></div>
     </header>
 
@@ -42,12 +42,15 @@
     <div class="viewer-container">
         <div id="hint" class="hint">💡 モデルをダブルタップして音声ON/OFF</div>
         
+        <!-- ぬるぬる滑らかに動くように設定を追加 -->
         <model-viewer 
             id="viewer"
             src="{{ url_for('static', filename='doutaku2.glb') }}" 
             camera-controls 
             touch-action="pan-y"
-            shadow-intensity="1">
+            shadow-intensity="1"
+            interpolation-decay="200"
+            interaction-prompt="none">
         </model-viewer>
     </div>
 
